@@ -1,6 +1,6 @@
 # Event Domains
 
-An event domain is a single ModuleScript that owns everything related to a logical area of the game: payload types, signals, pipelines, and network transport. Nothing is spread across multiple files. Adding a new event means adding to (or creating) a domain file - not touching a registry.
+An event domain is a single ModuleScript that owns everything related to a logical area of the game: payload types, signals, pipelines, and network transport. Nothing is spread across multiple files. Adding a new event means adding to (or creating) a domain file.
 
 ## Three scopes
 
@@ -95,5 +95,3 @@ return table.freeze({
 2. Add the payload type and a `Signal.new()` or `Pipeline.new()`.
 3. Optionally register with `Bus.watch`.
 4. The service that owns the event fires it. Other services listen.
-
-No other files need to change.
