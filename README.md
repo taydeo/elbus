@@ -1,13 +1,6 @@
-# eventbus
+# elbus
 
-A strongly-typed, domain-driven event framework for Roblox Luau. Replaces scattered RemoteEvent wiring and direct module-to-module calls with a structured system of signals, pipelines, and validated network transports.
-
-## Core ideas
-
-- **Event domains** own their payload types, signals, and network transport in a single file. No central registry, no god script.
-- **Signal** handles in-process pub/sub. **Pipeline** handles ordered, vetable transformation chains. **Net** handles network transport. Each has a single job.
-- **Type safety at boundaries** - client payloads are validated at the network boundary by Schema validators before any game logic touches them.
-- **Server authority** is enforced before any Pipeline or Signal handler runs on the server.
+A strongly-typed event framework for Roblox. Allows you to create different types of checks for specific cases, run your logic through event buses and validates remote data automagically.
 
 ## Three transport modes
 
@@ -22,35 +15,24 @@ A strongly-typed, domain-driven event framework for Roblox Luau. Replaces scatte
 ```
 ReplicatedStorage/
   EventBus/
-    Signal        -- typed in-process signal primitive
-    Pipeline      -- ordered transformation pipeline primitive
-    Bus           -- global broadcast bus for observers
+    Signal -- typed in-process signal primitive
+    Pipeline -- ordered transformation pipeline primitive
+    Bus -- global broadcast bus for observers
   Network/
-    Net           -- network transport (RemoteEvent abstraction)
-    Schema        -- runtime payload validators
+    Net -- network transport (RemoteEvent abstraction)
+    Schema -- runtime payload validators
   Simulation/
-    SimInput      -- InputAction wrapper for server authority inputs
-    Simulation    -- BindToSimulation wrapper
-  Events/         -- shared event domains (server <-> client)
-    CombatEvents
-    PlayerEvents
-    UIEvents
-  Inputs/         -- SimInput declarations
-    CombatInputs
-    MovementInputs
+    SimInput -- InputAction wrapper for server authority inputs
+    Simulation -- BindToSimulation wrapper
+  Events/ -- shared event domains (server <-> client)
+  Inputs/ -- SimInput declarations
 
 ServerScriptService/
-  Events/         -- server-only event domains
-    FoodEvents
-  Authority       -- server-side request validation
-  CombatService
-  KillFeedService
-  PlayerService
+  Events/ -- server-only event domains
+  Authority -- server-side request validation
 
 StarterPlayer/StarterPlayerScripts/
-  Events/         -- client-only event domains (add as needed)
-  CombatController
-  HUDController
+  Events/ -- client-only event domains (add as needed)
 ```
 
 ## Quick examples
