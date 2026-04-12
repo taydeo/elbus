@@ -122,11 +122,11 @@ end
 
 ## Docs
 
-- [Signal](Docs/Signal.md)
-- [Pipeline](Docs/Pipeline.md)
-- [Bus](Docs/Bus.md)
-- [Net](Docs/Net.md)
-- [Schema](Docs/Schema.md)
-- [Authority](Docs/Authority.md)
-- [SimInput](Docs/SimInput.md)
-- [Event Domains](Docs/EventDomains.md)
+- [Signal](docs/Signal.md)
+- [Pipeline](docs/Pipeline.md)
+- [Bus](docs/Bus.md)
+- [Net](docs/Net.md)
+- [Schema](docs/Schema.md)
+- [Authority](docs/Authority.md)
+- [SimInput](docs/SimInput.md)
+- [Event Domains](docs/EventDomains.md)
