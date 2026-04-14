@@ -9,9 +9,14 @@ Network transport layer. Wraps RemoteEvents so that services and controllers nev
 ```luau
 Net.server<T>(name: string): ServerSignal<T>
 Net.client<T>(name: string, validate: Validator<T>): ClientSignal<T>
+
+Net.serverUnreliable<T>(name: string): ServerSignal<T>
+Net.clientUnreliable<T>(name: string, validate: Validator<T>): ClientSignal<T>
 ```
 
-Both are called inside event domain files, not in services or controllers.
+All four are called inside event domain files, not in services or controllers.
+
+`serverUnreliable` and `clientUnreliable` use `UnreliableRemoteEvent` under the hood. The API is identical to the reliable variants. Use unreliable for high-frequency data where dropped packets are acceptable (position, aim direction, visual effects). Use reliable for anything that must arrive (ability use, item pickup, state changes).
 
 ## ServerSignal
 

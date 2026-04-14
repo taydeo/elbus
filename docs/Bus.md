@@ -1,17 +1,19 @@
 # Bus
 
-`ReplicatedStorage.EventBus.Bus`
+`ReplicatedStorage.Common.EventBus.Signal`
 
-Global broadcast bus for cross-cutting observers. Logging, analytics, and debugging systems subscribe once to `Bus.Fired` and receive every event that has been registered with `Bus.watch`.
+Global broadcast bus for cross-cutting observers. Logging, analytics, and debugging systems subscribe once to `Signal.Fired` and receive every event registered with `Signal.watch`.
 
-Payloads arrive as `unknown`. Observers are not expected to care about types - only event names and raw data for serialization or logging.
+Payloads arrive as `unknown`. Observers are not expected to care about types.
+
+Bus is per-context. A server bus and a client bus are separate instances.
 
 ## API
 
 ```luau
-Bus.Fired: Signal.Signal<BusEvent>
+Signal.Fired: Signal<BusEvent>
 
-Bus.watch(name: string, signal: Signal.Signal<any>)
+Signal.watch(name: string, signal: Signal<any>)
 ```
 
 ```luau
@@ -24,32 +26,33 @@ export type BusEvent = {
 ## Watching a Signal
 
 ```luau
-local Bus = require(game.ReplicatedStorage.EventBus.Bus)
+local Signal = require(game.ReplicatedStorage.Common.EventBus.Signal)
 
-Bus.watch("FoodEvents.ItemConsumed", ItemConsumed)
+Signal.watch("FoodEvents.ItemConsumed", ItemConsumed)
 ```
 
 ## Watching a Pipeline
 
-Point at `pipeline.Completed` - Bus never needs to know about Pipeline directly. Cancelled pipelines are not broadcast.
-
 ```luau
-Bus.watch("FoodEvents.EatAttempt", EatAttempt.Completed)
+Signal.watch("FoodEvents.EatAttempt", EatAttempt.Completed)
 ```
 
 ## Registering in a domain file
 
-Wire up Bus.watch at the bottom of the domain file so observers get everything from one place.
+Wire up `Signal.watch` at the bottom of the domain file so observers get everything from one place.
 
 ```luau
 -- ServerScriptService/Events/FoodEvents.luau
-local Bus = require(game.ReplicatedStorage.EventBus.Bus)
+local Signal = require(game.ReplicatedStorage.Common.EventBus.Signal)
+local Pipeline = require(game.ReplicatedStorage.Common.EventBus.Pipeline)
+type Signal<T> = Signal.Signal<T>
+type Pipeline<T> = Pipeline.Pipeline<T>
 
 local EatAttempt = Pipeline.new() :: Pipeline<EatAttemptPayload>
 local ItemConsumed = Signal.new() :: Signal<ItemConsumedPayload>
 
-Bus.watch("FoodEvents.EatAttempt",   EatAttempt.Completed)
-Bus.watch("FoodEvents.ItemConsumed", ItemConsumed)
+Signal.watch("FoodEvents.EatAttempt",   EatAttempt.Completed)
+Signal.watch("FoodEvents.ItemConsumed", ItemConsumed)
 
 return table.freeze({ EatAttempt = EatAttempt, ItemConsumed = ItemConsumed })
 ```
@@ -57,14 +60,13 @@ return table.freeze({ EatAttempt = EatAttempt, ItemConsumed = ItemConsumed })
 ## Subscribing as an observer
 
 ```luau
-local Bus = require(game.ReplicatedStorage.EventBus.Bus)
+local Signal = require(game.ReplicatedStorage.Common.EventBus.Signal)
 
-Bus.Fired:Connect(function(event: Bus.BusEvent)
+Signal.Fired:Connect(function(event: Signal.BusEvent) -- or use a local type alias
     print(event.name, game:GetService("HttpService"):JSONEncode(event.payload))
 end)
 ```
 
 ## Notes
 
-- Bus is per-context. A server Bus and a client Bus are separate instances - they do not communicate across the network.
-- Only events explicitly registered with `Bus.watch` are broadcast. Internal signals you do not want observed simply stay unwatched.
+- Only events explicitly registered with `Signal.watch` are broadcast. Internal signals you do not want observed simply stay unwatched.

@@ -48,9 +48,6 @@ return table.freeze({
 
 local Signal = require(game.ReplicatedStorage.EventBus.Signal)
 local Pipeline = require(game.ReplicatedStorage.EventBus.Pipeline)
-local Bus = require(game.ReplicatedStorage.EventBus.Bus)
-
--- local type aliases to avoid Signal.Signal<T> double-name
 type Signal<T> = Signal.Signal<T>
 type Pipeline<T> = Pipeline.Pipeline<T>
 
@@ -61,9 +58,9 @@ export type MyPayload = { ... }
 local MySignal = Signal.new() :: Signal<MyPayload>
 local MyPipeline = Pipeline.new() :: Pipeline<MyPayload>
 
--- 3. Register with Bus (optional, for observability)
-Bus.watch("MyDomain.MySignal",   MySignal)
-Bus.watch("MyDomain.MyPipeline", MyPipeline.Completed)
+-- 3. Register with the bus (optional, for observability)
+Signal.watch("MyDomain.MySignal",   MySignal)
+Signal.watch("MyDomain.MyPipeline", MyPipeline.Completed)
 
 -- 4. Freeze and return
 return table.freeze({
@@ -93,5 +90,5 @@ return table.freeze({
 
 1. Open or create the relevant domain file in `ServerScriptService/Events/`.
 2. Add the payload type and a `Signal.new()` or `Pipeline.new()`.
-3. Optionally register with `Bus.watch`.
+3. Optionally register with `Signal.watch`.
 4. The service that owns the event fires it. Other services listen.

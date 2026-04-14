@@ -1,5 +1,7 @@
 --!strict
 
+local Players = game:GetService("Players")
+
 --- Server-side authority checks.
 ---
 --- Authority is separate from schema validation:
@@ -42,6 +44,10 @@ end
 local function rateLimit<T>(max: number): Check<T>
 	type Bucket = { count: number, resetAt: number }
 	local buckets: { [number]: Bucket } = {}
+
+	Players.PlayerRemoving:Connect(function(player)
+		buckets[player.UserId] = nil
+	end)
 
 	return function(player: Player, _payload: T): (boolean, string?)
 		local now = os.clock()

@@ -42,10 +42,11 @@ Declare inputs in a shared inputs file:
 ```luau
 -- ReplicatedStorage/Inputs/MovementInputs.luau
 local SimInput = require(game.ReplicatedStorage.Simulation.SimInput)
+type SimInput<T> = SimInput.SimInput<T>
 
 return table.freeze({
-    MoveDirection = SimInput.axis3D("MoveDirection") :: SimInput.SimInput<Vector3>,
-    Sprinting = SimInput.bool("Sprinting") :: SimInput.SimInput<boolean>,
+    MoveDirection = SimInput.axis3D("MoveDirection") :: SimInput<Vector3>,
+    Sprinting = SimInput.bool("Sprinting") :: SimInput<boolean>,
 })
 ```
 

@@ -88,7 +88,9 @@ local function new<T>(): Signal<T>
 		Wait = function(_self: Signal<T>): T
 			local co = coroutine.running()
 			assert(co, "Signal:Wait() must be called from inside a coroutine")
-			connect(function(payload: T)
+			local conn: Connection
+			conn = connect(function(payload: T)
+				conn:Disconnect()
 				coroutine.resume(co, payload)
 			end)
 			return coroutine.yield() :: T
@@ -98,4 +100,32 @@ local function new<T>(): Signal<T>
 	return signal
 end
 
-return { new = new }
+--- Global broadcast bus for cross-cutting observers (logging, analytics, debugging).
+---
+--- Register signals with watch() so they relay into Fired. Observers subscribe
+--- once to Fired and receive every watched event, typed-erased as unknown.
+---
+--- Bus is per-context, server and client buses are separate instances.
+--- Only signals explicitly registered with watch() are broadcast.
+---
+---   Signal.watch("FoodEvents.ItemConsumed", ItemConsumed)
+---   Signal.watch("FoodEvents.EatAttempt",   EatAttempt.Completed)
+---
+---   Signal.Fired:Connect(function(event)
+---       print(event.name, HttpService:JSONEncode(event.payload))
+---   end)
+
+export type BusEvent = {
+	name: string,
+	payload: unknown,
+}
+
+local Fired = new() :: Signal<BusEvent>
+
+local function watch(name: string, signal: Signal<any>)
+	signal:Connect(function(payload: any)
+		Fired:Fire({ name = name, payload = payload })
+	end)
+end
+
+return { new = new, Fired = Fired, watch = watch }
